@@ -15,7 +15,13 @@
  * 
  * will have initially room for 4 strings.
  */
-public class DynArr implements Comparable271<DynArr> {
+public class DynamicArray_Solution {
+
+    /** toString output for empty object */
+    private static final String EMPTY_OBJECT = ">> The object contains no data <<";
+    private static final String OPENING = "[ ";
+    private static final String CLOSING = "%s ]";
+    private static final String FMT_ELEMENT = "%s, ";
 
     /** Default size for underlying array */
     private static final int DEFAULT_SIZE = 4;
@@ -31,7 +37,7 @@ public class DynArr implements Comparable271<DynArr> {
      * size must be a positive, non zero value. Otherwise the constructor uses the
      * default size value.
      */
-    public DynArr(int size) {
+    public DynamicArray_Solution(int size) {
         // If size <= 0 use default -- this is a good time to demo ternary operator
         size = (size > 0) ? size : DEFAULT_SIZE;
         this.foundation = new String[size];
@@ -39,19 +45,16 @@ public class DynArr implements Comparable271<DynArr> {
     } // full constructor
 
     /**
-     * Array-based constructor -- used for testing. Originally this constructor used
-     * a shallow array copy (foundation=data). The revised code below creates a deep
-     * copy of data into foundation.
+     * Array-based constructor -- used for testing.
+     * 
+     * WARNING: SHALLOW ARRAY COPY
      * 
      * @param data
      */
-    public DynArr(String[] data) {
+    public DynamicArray_Solution(String[] data) {
         this(DEFAULT_SIZE);
         if (data != null) {
-            this.foundation = new String[data.length];
-            for (int i = 0; i < data.length; i++) {
-                this.foundation[i] = data[i];
-            }
+            this.foundation = data;
             this.occupancy = data.length;
         }
     } // array-based constructor
@@ -59,68 +62,9 @@ public class DynArr implements Comparable271<DynArr> {
     /**
      * Default constructor
      */
-    public DynArr() {
+    public DynamicArray_Solution() {
         this(DEFAULT_SIZE);
     } // default constructor
-
-    /**
-     * Accessor for this.foundation
-     */
-    public String[] getFoundation() {
-        return this.foundation;
-    } // method getFoundation
-
-    /**
-     * Implements the Comparable inteface. The method determines if the current
-     * object (this) is greater, same, or less than the called object (other). Size
-     * is computed as the number of characters in each object. The method treats
-     * null objects as zero length. The following comparisons are considered:
-     * 
-     * notNull.compareTo(null) ..... returns 1 because a not null object, even with
-     * zero characters has more substance than a null
-     * 
-     * notNull.compareTo(notNull) .. computers the actual character count for both
-     * objects and returns their difference
-     * 
-     * The comparison
-     * 
-     * null.compareTo(whatever)
-     * 
-     * is not considered because the method is called by an instance of class
-     * Dynamic Array (i.e., "this") and therefore the invoking object is never null.
-     * 
-     * @param other Dynamic Array object to compare this instance with
-     * @return a negative int if this instance is letter than the other object, 0
-     *         if the two objects have the same size, and a positive int when
-     *         this instance is greater than the other object.
-     */
-    public int compareTo(DynArr other) {
-        int diff = 1;
-        if (other != null) {
-            diff = countCharacters(this) - countCharacters(other);
-        }
-        return diff;
-    } // method compareTo
-
-    /**
-     * Counts the characters in all strings of a Dynamic Array object. The method is
-     * private and can be called only from this.compareTo. The compareTo method
-     * ensures that countCharacters will never be called with a null arguments.
-     * 
-     * @param da Dynamic array object to count its characters (string lengths),
-     *           guaranteed to never be null.
-     * @return the total number of characters among all strings stored in the
-     *         object's underlying array.
-     */
-    private int countCharacters(DynArr da) {
-        int characterCount = 0;
-        for (String s : da.getFoundation()) {
-            if (da != null) {
-                characterCount += s.length();
-            }
-        }
-        return characterCount;
-    } // method countCharacters
 
     /**
      * Checks if the specified string is present in the dynamic array.
@@ -249,6 +193,62 @@ public class DynArr implements Comparable271<DynArr> {
         }
     } // method insert
 
+    /**
+     * Finds the position of the first instance of a string in the underlying array
+     * of the object.
+     * 
+     * @param string to look for
+     * @return position in underlying array or -1 if string not present.
+     */
+    public int indexOf(String string) {
+        int index = -1;
+        if (string != null) {
+            int i = 0;
+            while (i < this.foundation.length && index == -1) {
+                if (this.foundation[i] != null && this.foundation[i].equals(string)) {
+                    index = i;
+                }
+                i++;
+            }
+        }
+        return index;
+    } // method indexOf
+
+    /**
+     * Ratio of how many elements of the underlying array are used.
+     * 
+     * @return the ratio of occupancy/length with two decimal digits.
+     */
+    public double usage() {
+        return Math.round(
+                ((double) this.occupancy / (double) this.foundation.length) * 100.0) / 100.0;
+    } // method usage
+
+    /**
+     * Creates a textual representation of the object, overriding the default
+     * Object.toString method. This method uses a StringBuilder to assemble
+     * the result. If the underlying array contains no data, a special message
+     * is displayed.
+     * 
+     * @return textual representation of object as a string
+     */
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (this.foundation[0] == null) {
+            // if first element is null, everything else is null too
+            sb.append(EMPTY_OBJECT);
+        } else {
+            sb.append(OPENING);
+            // Loop leaves last elemement for later, to avoid an off-by-one error
+            for (int i = 0; i < this.occupancy - 1; i++) {
+                sb.append(String.format(FMT_ELEMENT, this.foundation[i]));
+            }
+            // Last element doesn't need a comma afterwards
+            sb.append(String.format(CLOSING, this.foundation[this.occupancy - 1]));
+        }
+        return sb.toString();
+    } // method toString
+
     /** Driver/test code */
     public static void main(String[] args) {
         final String PASS = "Pass";
@@ -256,7 +256,16 @@ public class DynArr implements Comparable271<DynArr> {
         final String NON_EXISTING = "COBOL";
         // Test data
         String[] testData = { "Java", "Python", "C", "C++", "Fortran" };
-        DynArr test = new DynArr(testData);
+        DynamicArray_Solution test = new DynamicArray_Solution(testData);
+        DynamicArray_Solution empty = new DynamicArray_Solution();
+        empty.insert(NON_EXISTING);
+        boolean indexExistsTest = true;
+        for (int i = 0; i < testData.length; i++) {
+            indexExistsTest = indexExistsTest && (i == test.indexOf(testData[i]));
+        }
+        boolean indexDoesntExistTest = (test.indexOf(NON_EXISTING) < 0);
+        System.out.printf("\nIndex exists test ........ %s", (indexExistsTest) ? PASS : FAIL);
+        System.out.printf("\nIndex not found test ..... %s\n", (indexDoesntExistTest) ? PASS : FAIL);
     } // method main
 
 } // class DynamicArray
