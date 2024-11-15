@@ -9,7 +9,7 @@ public class TreeNode implements Comparable<TreeNode> {
     /**
      * Basic constructor creates a simple node with a payload and two null children.
      * 
-     * @param word
+     * @param word the data we store in the node.
      */
     public TreeNode(String word) {
         this.word = word;
@@ -17,16 +17,62 @@ public class TreeNode implements Comparable<TreeNode> {
         this.right = null;
     } // basic constructor
 
-    public String getWord() {
-        return word;
-    }
-
-    /** Implementation of Comparable using the nodes' content strings as basis for comparison. */
+    /**
+     * Implementation of Comparable using the nodes' content strings as basis for
+     * comparison. If the
+     */
     public int compareTo(TreeNode other) {
         int result = 1;
         if (other != null)
             result = this.getWord().compareTo(other.getWord());
         return result;
     } // method compareTo
-    
-}
+
+    /**
+     * String representation of the TreeNode.
+     * 
+     * For now it just returns TreeNode.word, so it's identical -- in form -- to
+     * getWord(). In future versions we may want to write something more
+     * sophisticated, like the contents of the node along with some information
+     * about its two children.
+     */
+    public String toString() {
+        return this.word;
+    } // method toString
+
+
+    /** Accesors and mutators */
+
+    public boolean hasLeft() {
+        return this.left != null;
+    }
+
+    public boolean hasRight() {
+        return this.right != null;
+    }
+
+    public String getWord() {
+        return word;
+    }
+
+    public TreeNode getRight() {
+        return this.right;
+    }
+
+    public TreeNode getLeft() {
+        return this.left;
+    }
+
+    public void setLeft(TreeNode node) {
+        this.left = node;
+    }
+
+    public void setRight(TreeNode node) {
+        this.right = node;
+    }
+
+    public void setWord(String word) {
+        this.word = word;
+    }
+
+} // class TreeNode
